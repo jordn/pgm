@@ -26,6 +26,7 @@ function genotypeFactor = genotypeGivenParentsGenotypesFactor(numAlleles, genoty
 % alleles -- need to add number of alleles at the end to account for homozygotes
 
 genotypeFactor = struct('var', [], 'card', [], 'val', []);
+numGenotypes = nchoosek(numAlleles, 2) + numAlleles;
 
 % Each allele has an ID.  Each genotype also has an ID.  We need allele and
 % genotype IDs so that we know what genotype and alleles correspond to each
@@ -57,9 +58,29 @@ genotypeFactor = struct('var', [], 'card', [], 'val', []);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
 
 % Fill in genotypeFactor.var.  This should be a 1-D row vector.
+genotypeFactor.var = [genotypeVarChild, genotypeVarParentOne, genotypeVarParentTwo];
+
 % Fill in genotypeFactor.card.  This should be a 1-D row vector.
+genotypeFactor.card = [numGenotypes numGenotypes numGenotypes];
 
 genotypeFactor.val = zeros(1, prod(genotypeFactor.card));
+
 % Replace the zeros in genotypeFactor.val with the correct values.
+for i = 1:prod(genotypeFactor.card)
+    assignment = IndexToAssignment(i, genotypeFactor.card); % 3 dim array
+    alleles_X1 = genotypesToAlleles(assignment(1),:);
+    alleles_X2 = genotypesToAlleles(assignment(2),:);
+    alleles_X3 = genotypesToAlleles(assignment(3),:);
+    for i2 = 1:2
+        for i3 = 1:2
+            x2 = alleles_X2(i2);
+            x3 = alleles_X3(i3);
+            if isequal(alleles_X1, [x2, x3]) || isequal(alleles_X1, [x3, x2])
+                genotypeFactor.val(i) = genotypeFactor.val(i) + 0.25;
+            end
+        end
+    end
+end
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
