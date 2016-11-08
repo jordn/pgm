@@ -1,4 +1,5 @@
-function phenotypeFactor = constructSigmoidPhenotypeFactor(alleleWeights, geneCopyVarOneList, geneCopyVarTwoList, phenotypeVar)
+function phenotypeFactor = constructSigmoidPhenotypeFactor(alleleWeights,...
+    geneCopyVarOneList, geneCopyVarTwoList, phenotypeVar)
 % This function takes a cell array of alleles' weights and constructs a 
 % factor expressing a sigmoid CPD.
 %
@@ -46,9 +47,25 @@ phenotypeFactor = struct('var', [], 'card', [], 'val', []);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
 
 % Fill in phenotypeFactor.var.  This should be a 1-D row vector.
+phenotypeFactor.var = [phenotypeVar; geneCopyVarOneList; geneCopyVarTwoList]';
+
+numberPhenotypes = 2;
 % Fill in phenotypeFactor.card.  This should be a 1-D row vector.
+phenotypeFactor.card = [numberPhenotypes ...
+    repmat([2], 1, length(geneCopyVarOneList) + length(geneCopyVarOneList))];
+
 
 phenotypeFactor.val = zeros(1, prod(phenotypeFactor.card));
+
 % Replace the zeros in phentoypeFactor.val with the correct values.
+for i = 1:2:prod(phenotypeFactor.card)
+    ass = IndexToAssignment(i, phenotypeFactor.card);
+    phenotypeFactor.val(i) = computeSigmoid(alleleWeights{1}(ass(2)) + ...
+        alleleWeights{2}(ass(3)) + alleleWeights{1}(ass(4)) + ...
+        alleleWeights{2}(ass(5)));
+    phenotypeFactor.val(i+1) = 1 - phenotypeFactor.val(i);
+    
+end
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

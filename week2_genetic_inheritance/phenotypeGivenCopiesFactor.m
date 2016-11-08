@@ -57,11 +57,24 @@ phenotypeFactor = struct('var', [], 'card', [], 'val', []);
 %INSERT YOUR CODE HERE
 % The number of phenotypes is 2
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
+numPhenotypes = 2;
 
 % Fill in phenotypeFactor.var.  This should be a 1-D row vector.
+phenotypeFactor.var = [phenotypeVar geneCopyVarOne geneCopyVarTwo];
+
 % Fill in phenotypeFactor.card.  This should be a 1-D row vector.
+phenotypeFactor.card = [numPhenotypes numAlleles numAlleles];
 
 phenotypeFactor.val = zeros(1, prod(phenotypeFactor.card));
 % Replace the zeros in phentoypeFactor.val with the correct values.
+
+for i = 1:2:prod(phenotypeFactor.card)
+    assignment = IndexToAssignment(i, phenotypeFactor.card); % 3 dim array
+    genotype = allelesToGenotypes(assignment(2), assignment(3));
+    phenotypeProb = alphaList(genotype);
+    phenotypeFactor.val(i) = phenotypeProb;
+    phenotypeFactor.val(i+1) = 1-phenotypeProb;
+end
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
