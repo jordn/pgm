@@ -20,7 +20,17 @@ function factor = ComputeSimilarityFactor (images, K, i, j)
 
 factor = struct('var', [], 'card', [], 'val', []);
 
+similarity = ImageSimilarity(images(i).img, images(j).img);
+
+vals = ones(K, K);
+vals(1:K+1:K*K) = similarity;
+
+
 % Your code here:
+factor.var = [i, j];
+factor.card = [K K];
+factor.val = reshape(vals, K*K, 1);
+
 
 end
 

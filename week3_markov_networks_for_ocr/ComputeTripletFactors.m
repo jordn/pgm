@@ -28,5 +28,20 @@ end
 factors = repmat(struct('var', [], 'card', [], 'val', []), n - 2, 1);
 
 % Your code here:
+% Construct vals table
+triplets = ones(K, K, K);
+for i = 1:length(tripletList)
+   triplets(tripletList(i).chars(1), tripletList(i).chars(2),...
+       tripletList(i).chars(3)) = tripletList(i).factorVal;
+end
+triplets = reshape(triplets, K*K*K, 1);
+
+
+for i = 1:n-2
+    factors(i).var = [i i+1 i+2];
+    factors(i).card = [K K K];
+    factors(i).val = triplets;
+end
+
 
 end
